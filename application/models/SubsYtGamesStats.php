@@ -50,22 +50,38 @@ class SubsYtGamesStats extends SubsYtGamesStatsBase {
      * @param int $yt_id
      * @return mixed
      */
-    public function getChampionStatsBy($from_timestamp, $to_timestamp, $division, $yt_id) {
-
+    public function getChampionStatsBy($from_timestamp, $to_timestamp, $division, $yt_id, &$totalGames=0) {
         //CREAMOS Y EJECUTAMOS SQL
         $numberUnions = ($to_timestamp - $from_timestamp) / $division;
         $sql = [];
         for ($i = 0; $i < $numberUnions; $i++) {
             $from = $from_timestamp + $division * $i;
             $to = $from_timestamp + $division * ($i + 1);
-            $sql[] = 'select ' . self::COLUMN_CHAMPION . ', count(' . self::COLUMN_CHAMPION . ') as games_played, "' . date('d/m/Y', $from / 1000) . '" as fechas, ' . ($from / 1000) . ' as from_timestamp from ' . self::TABLE_NAME . ' where cast(' . self::COLUMN_CREATED_DATE . ' as int) BETWEEN ' . ($from) . ' AND ' . ($to) . ' and ' . self::COLUMN_IDYOUTUBER . '=' . $yt_id . ' group by ' . self::COLUMN_CHAMPION;
+            $sql[] = '(SELECT 
+                        lg.gameId AS game_id, 
+                        lg.champion AS champion,
+                        lg.createDate AS create_date
+                    FROM suscriptores_youtubers sy
+                            INNER JOIN suscriptores_lastest_games slg ON slg.idsuscriptor=sy.idsuscriptor
+                            INNER JOIN lastest_games lg ON lg.idlastest_games = slg.idlastest_game
+                    WHERE sy.idyoutuber=' . $yt_id . ' AND createDate between ' . $from . ' and ' . $to . ')
+                    UNION
+                    (SELECT 
+                            rg.matchId AS game_id, 
+                            rg.champion AS champion,
+                            rg.timestamp AS create_date
+                    FROM suscriptores_youtubers sy
+                            INNER JOIN suscriptores_ranked_games srg ON srg.idsuscriptor=sy.idsuscriptor
+                            INNER JOIN ranked_games rg ON rg.idranked_games = srg.idranked_game
+                    WHERE sy.idyoutuber=' . $yt_id . ' AND `timestamp` between ' . $from . ' and ' . $to . ')';
         }
         $query = implode(' union ', $sql);
+        $query = 'SELECT champion, count(*) as games_played, DATE_FORMAT(FROM_UNIXTIME(`create_date`/1000), \'%d-%m-%Y\') as fechas, create_date as `from_timestamp` FROM '
+                . '(SELECT champion, game_id, min(create_date) as create_date FROM (' . $query . ') as tpm GROUP BY game_id, champion) as tmp2'
+                . ' GROUP BY fechas, champion order by champion, fechas, count(*) desc;';
         $aRS = $this->db->query($query)->result_array();
 
         //CREAMOS EL OBJETO INICIAL
-        \LolApi\LolApi::globalApi()->LolApiConfig->active_debug = true;
-        \LolApi\LolApi::globalApi()->LolApiConfig->force_get_cache = true;
         $championList = LolApi\LolApi::globalApi()->getStaticChampionListDto(null, true)->data;
         $aChampStats = [];
         foreach ($aRS as $row) {
@@ -77,7 +93,7 @@ class SubsYtGamesStats extends SubsYtGamesStatsBase {
             $aChampStats[$champ_name]['stats'][] = [
                 'games_played' => $row['games_played'],
                 'fechas' => $row['fechas'],
-                'from_timestamp' => date('d', $row['from_timestamp']),
+                'from_timestamp' => $row['from_timestamp'],
             ];
         }
 
@@ -89,6 +105,7 @@ class SubsYtGamesStats extends SubsYtGamesStatsBase {
             });
             $games = 0;
             foreach ($stats as $key => $value) {
+                $totalGames++;
                 $games += $value['games_played'];
             }
             $aStats['stats'] = $stats;
@@ -101,18 +118,6 @@ class SubsYtGamesStats extends SubsYtGamesStatsBase {
         });
 
         return $aChampStats;
-    }
-
-    /**
-     * recupera el numero total de partidas que existen entre las fechas solicitadas
-     * @param int $from_timestamp
-     * @param int $to_timestamp
-     * @param int $yt_id
-     * @return int
-     */
-    public function getTotalGames($from_timestamp, $to_timestamp, $yt_id) {
-        $query = 'select count(*) as c from ' . self::TABLE_NAME . ' where cast(' . self::COLUMN_CREATED_DATE . ' as int) BETWEEN ' . ($from_timestamp) . ' AND ' . ($to_timestamp) . ' and ' . self::COLUMN_IDYOUTUBER . '=' . $yt_id;
-        return $this->db->query($query)->row_array(0)['c'];
     }
 
 }

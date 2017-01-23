@@ -45,6 +45,7 @@ class PanelController extends MY_Controller {
 
     public function stats_champions() {
         set_time_limit(0);
+        $initTime = microtime(true);
         $aData = null;
         $totalGames = 0;
         if ($this->input->get('desde') && $this->input->get('hasta') && $this->input->get('division') !== false) {
@@ -53,14 +54,14 @@ class PanelController extends MY_Controller {
             $division = ((int) $this->input->get('division')) * 1000;
 
             if ($from_timestamp < $to_timestamp && $to_timestamp - $from_timestamp >= $division) {
-                $aData = $this->SubsYtGamesStats->getChampionStatsBy($from_timestamp, $to_timestamp, $division, $this->Youtubers->getIdyoutubers());
-                $totalGames = $this->SubsYtGamesStats->getTotalGames($from_timestamp, $to_timestamp, $this->Youtubers->getIdyoutubers());
+                $aData = $this->SubsYtGamesStats->getChampionStatsBy($from_timestamp, $to_timestamp, $division, $this->Youtubers->getIdyoutubers(), $totalGames);
             } else {
                 $error_msg = 'Las fecha inicial debe ser menor a la final, y deben poder ser divididias por más de una unidad con el intervalo de tiempo.';
             }
         }
 
-        $this->response(['aData' => $aData, 'totalGames' => $totalGames, 'error_msg' => $error_msg]);
+        $timeSpent = number_format(abs(microtime(true) - $initTime), 2, ',', '.');
+        $this->response(['aData' => $aData, 'totalGames' => $totalGames, 'error_msg' => $error_msg, 'timeSpent' => $timeSpent]);
     }
 
     public function stats_ranked() {

@@ -39,7 +39,7 @@
             <?php if ($aData): ?>
                 <hr noshade>
                 <div style='margin-bottom: 10px;margin-top:20px;'>
-                    Número total de juegos analizados: <strong class='text-primary'><?= $totalGames ?></strong>
+                    Número total de juegos analizados: <strong class='text-primary'><?= $totalGames ?></strong> | Tiempo de carga: <strong class="text-muted"><?= $timeSpent ?>s</strong>
                     <div class='filter-box pull-right'>
                         <input type='text' class='form-control graph-filter-input' placeholder='Filtrar por nombre...' style='max-width: 400px'>
                     </div>
@@ -125,8 +125,8 @@
                 $('.graph-box').show();
             }
         });
-        $('input[type="submit"]').click(function(e){
-            $(this).prop('disabled',true);
+        $('input[type="submit"]').click(function (e) {
+            $(this).prop('disabled', true);
         })
     })
 </script>
