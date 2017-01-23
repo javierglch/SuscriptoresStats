@@ -39,7 +39,7 @@
             <link href="<?php echo preg_match('/http/', $css_file) == 1 ? $css_file : base_url($css_file); ?>" rel="stylesheet"/>
         <?php endforeach; ?>
 
-        <script src="js/bower_components/chart.js/dist/Chart.bundle.min.js" type="text/javascript"></script>
+        <script src="/bower_components/chart.js/dist/Chart.bundle.min.js" type="text/javascript"></script>
 
         <script type="text/javascript">
             (function (e, t, n) {

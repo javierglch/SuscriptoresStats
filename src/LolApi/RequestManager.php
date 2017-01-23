@@ -165,7 +165,7 @@ class RequestManager {
                 unset($aParams[$paramkey]);
             }
         }
-        return $resourceUrl . "?" . http_build_query($aParams, null, null, PHP_QUERY_RFC3986);
+        return $resourceUrl . "?" . http_build_query($aParams, PHP_QUERY_RFC3986);
     }
 
     /**

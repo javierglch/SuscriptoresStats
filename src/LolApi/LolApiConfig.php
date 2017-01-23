@@ -45,10 +45,10 @@ class LolApiConfig {
     const GAME_CLIENT_RELEASE_FILE_PATH = __DIR__ . '/Cache/_release';
 
     /** @var string */
-    public $api_key_production = 'd87b8bad-cc2c-47b5-9f43-cbcffe78c00b';
+    public $api_key_development = 'd87b8bad-cc2c-47b5-9f43-cbcffe78c00b';
 
     /** @var string */
-    public $api_key_development = 'RGAPI-de13121c-3a84-4793-b171-7af8eb232711';
+    public $api_key_production = 'RGAPI-de13121c-3a84-4793-b171-7af8eb232711';
 
     /** @var string */
     public $current_season = 'SEASON2017';

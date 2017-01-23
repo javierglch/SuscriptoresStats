@@ -64,13 +64,15 @@ class SubsYtGamesStats extends SubsYtGamesStatsBase {
         $aRS = $this->db->query($query)->result_array();
 
         //CREAMOS EL OBJETO INICIAL
-        \LolApi\LolApi::globalApi()->LolApiConfig->active_debug=true;
+        \LolApi\LolApi::globalApi()->LolApiConfig->active_debug = true;
+        \LolApi\LolApi::globalApi()->LolApiConfig->force_get_cache = true;
+        $championList = LolApi\LolApi::globalApi()->getStaticChampionListDto(null, true)->data;
         $aChampStats = [];
         foreach ($aRS as $row) {
-            try{
-                $champ_name = LolApi\LolApi::globalApi()->getStaticChampionDto($row['champion'])->name;
-            } catch (Exception $ex) {
-                $champ_name='[champ_id:'.$row['champion'].']';
+            if (isset($championList[$row['champion']])) {
+                $champ_name = $championList[$row['champion']]->name;
+            } else {
+                $champ_name = '[champ_id:' . $row['champion'] . ']';
             }
             $aChampStats[$champ_name]['stats'][] = [
                 'games_played' => $row['games_played'],
@@ -97,7 +99,7 @@ class SubsYtGamesStats extends SubsYtGamesStatsBase {
         uasort($aChampStats, function($a, $b) {
             return $b['total_games'] - $a['total_games'] > 0;
         });
-        
+
         return $aChampStats;
     }
 

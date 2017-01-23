@@ -10,11 +10,16 @@ class _Test extends MY_Controller {
         parent::__construct(self::$FOLDER);
     }
 
-    /**
-     * Crea la redireccion hacia el controlador que corresponde al usuario en cuestion
-     */
     public function index() {
-        set_time_limit(0);                                                  
+        echo date('d-m-Y',1485099171874/1000);
+        die();
+    }
+
+    /**
+     * tareaActualizarInvocadores
+     */
+    public function tareaActualizarInvocadores() {
+        set_time_limit(0);
         $aSuscriptores = $this->Suscriptores->selectAll();
 
         echo '<ol>';
