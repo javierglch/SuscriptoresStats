@@ -20,7 +20,7 @@
                                 <?php print_all_flash_messages() ?>
                                 <div class="form-group">
                                     <label for="EmailInput">Email</label>
-                                    <input name="email" class="form-control" type="text" placeholder="Email o id canal de youtube" id="EmailInput" value="<?= set_value('email') ?>">
+                                    <input name="email" class="form-control" type="text" placeholder="Email o id canal de youtube" id="EmailInput" value="<?= set_value('email') ?>" autofocus="autofocus">
                                 </div>
                                 <div class="form-group">
                                     <label for="PassInput">Contraseña</label>

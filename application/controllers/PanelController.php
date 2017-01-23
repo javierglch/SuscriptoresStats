@@ -38,9 +38,9 @@ class PanelController extends MY_Controller {
     }
 
     public function stats_subslist() {
-        $aSubsYtJoin = $this->Youtubers->getSubsList();
+        $aSubsList = $this->Youtubers->getSubsList();
         $avgMMR = $this->Youtubers->getSubsAvgMMR();
-        $this->response(['aSubsYtJoin' => $aSubsYtJoin, 'avgMMR' => $avgMMR]);
+        $this->response(['aSubsList' => $aSubsList, 'avgMMR' => $avgMMR]);
     }
 
     public function stats_champions() {
@@ -48,15 +48,20 @@ class PanelController extends MY_Controller {
         $initTime = microtime(true);
         $aData = null;
         $totalGames = 0;
+        $error_msg = null;
         if ($this->input->get('desde') && $this->input->get('hasta') && $this->input->get('division') !== false) {
             $from_timestamp = DateTime::createFromFormat('d-m-Y H:i:s', $this->input->get('desde') . ' 00:00:00')->getTimestamp() * 1000;
             $to_timestamp = DateTime::createFromFormat('d-m-Y H:i:s', $this->input->get('hasta') . ' 00:00:00')->getTimestamp() * 1000;
             $division = ((int) $this->input->get('division')) * 1000;
 
-            if ($from_timestamp < $to_timestamp && $to_timestamp - $from_timestamp >= $division) {
-                $aData = $this->SubsYtGamesStats->getChampionStatsBy($from_timestamp, $to_timestamp, $division, $this->Youtubers->getIdyoutubers(), $totalGames);
+            if ($from_timestamp > $to_timestamp) {
+                $error_msg = 'La fecha inicial debe ser menor a la final ';
+            } elseif (abs($to_timestamp - $from_timestamp) <= $division) {
+                $error_msg = 'El intervalo de fechas es menor a la división pedida. Por favor, amplia el rango de fechas o disminuye la división.';
+            } elseif (abs($to_timestamp - $from_timestamp) / $division > 20) {
+                $error_msg = 'No se permite una consulta con más de 20 divisiones, selecciona un rango menor de fechas.';
             } else {
-                $error_msg = 'Las fecha inicial debe ser menor a la final, y deben poder ser divididias por más de una unidad con el intervalo de tiempo.';
+                $aData = $this->SubsYtGamesStats->getChampionStatsBy($from_timestamp, $to_timestamp, $division, $this->Youtubers->getIdyoutubers(), $totalGames);
             }
         }
 

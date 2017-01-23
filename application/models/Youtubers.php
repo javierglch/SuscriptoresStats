@@ -171,21 +171,22 @@ class Youtubers extends YoutubersBase {
      */
     public function getSubsList() {
         $ci = & get_instance();
-        $aSubsYtJoin = $ci->SubsYtJoin->findBy([
-            SubsYtJoin::COLUMN_YT_IDYOUTUBERS => $this->getIdyoutubers()
-        ]);
-        return $aSubsYtJoin;
+        $aRSSuscriptores = $this->db->query('select s.* from suscriptores s inner join suscriptores_youtubers sy on sy.idsuscriptor=s.idsuscriptores where sy.idyoutuber=' . $this->getIdyoutubers() . ';')->result_array();
+        $aResult = [];
+        foreach ($aRSSuscriptores as $row) {
+            $o = new Suscriptores();
+            $aResult[] = $o->constructFromArray($row);
+        }
+        return $aResult;
     }
-    
+
     /**
      * 
      * @return SubsYtJoin
      */
     public function getSubsAvgMMR() {
-        return $this->db->select('avg('.SubsYtJoin::COLUMN_SUB_MMR.') as avg_mmr')
-                ->where(SubsYtJoin::COLUMN_YT_IDYOUTUBERS,$this->getIdyoutubers())
-                ->get(SubsYtJoin::TABLE_NAME)
-                ->row_array()['avg_mmr'];
+        $ci = & get_instance();
+        return $this->db->query('select avg(mmr) as avg_mmr from suscriptores s inner join suscriptores_youtubers sy on sy.idsuscriptor=s.idsuscriptores where sy.idyoutuber=' . $this->getIdyoutubers() . ';')->row_array()['avg_mmr'];
     }
 
 }

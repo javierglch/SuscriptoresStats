@@ -36,6 +36,7 @@ use LolApi\Classes\TournamentProvider\TournamentCodeDTO;
 use LolApi\Classes\TournamentProvider\LobbyEventDTOWrapper;
 use LolApi\Classes\TournamentProvider\ProviderRegistrationParameters;
 use LolApi\Classes\TournamentProvider\TournamentRegistrationParameters;
+use LolApi\Classes\Stats\PlayerStatsSummaryListDto;
 
 class LolApi {
     // <editor-fold defaultstate="collapsed" desc="# ~ GLOBAL API, VARIABLES Y CONSTRUCTOR ~ #">
@@ -327,7 +328,7 @@ class LolApi {
     /**
      * Recupera las entradas de los invocadores en las ligas en las que se encuentran
      * @param array $summonerIds se transforma posteriormente en una lista separada por comas.
-     * @return LeagueDto
+     * @return LeagueDto array
      * @throws Exceptions\BadRequestException
      * @throws Exceptions\UnauthorizedException
      * @throws Exceptions\NotFoundException
@@ -897,7 +898,7 @@ class LolApi {
             $aParams['season'] = $season;
         }
         $data = $this->doRequest(URLs::R_URL_STATS_SUMMARY, $aParams, __FUNCTION__, CacheManager::TIME_ELAPSED_B);
-        return new RankedStatsDto($data);
+        return new PlayerStatsSummaryListDto($data);
     }
 
     /**

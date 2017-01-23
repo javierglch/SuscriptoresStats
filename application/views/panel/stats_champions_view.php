@@ -32,10 +32,10 @@
                             </script>
                         <?php endif; ?>
                     </div>
-                    &nbsp;<input class="btn btn-success" type="submit" value="Aceptar">
+                    &nbsp;<button class="btn btn-success" type="submit">Buscar</button>
                 </div>
             </form>
-
+            <div class="submit-action-msg" style="text-align: center;"></div>
             <?php if ($aData): ?>
                 <hr noshade>
                 <div style='margin-bottom: 10px;margin-top:20px;'>
@@ -125,8 +125,9 @@
                 $('.graph-box').show();
             }
         });
-        $('input[type="submit"]').click(function (e) {
-            $(this).prop('disabled', true);
+        $('form').submit(function (e) {
+            $('.submit-action-msg').html('<strong>La consulta puede durar varios minutos si las fechas son muy amplias (más de 1 mes dividio por días), por favor, espera...</strong><br/><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>');
+            $('input[type="submit"]').prop('disabled', true);
         })
     })
 </script>

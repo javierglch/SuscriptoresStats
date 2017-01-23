@@ -11,10 +11,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * 
  * Información sobre la tabla suscriptores
  * - Versión: 10
- * - Fecha de creación: 2017-01-22 19:15:45
+ * - Fecha de creación: 2017-01-23 17:19:38
  * - Última modificación: 
  * - Comentario <
- * - Numero de columnas: 10
+ * - Numero de columnas: 12
  * 
  * @author Javier
  */
@@ -61,6 +61,12 @@ tier = +500
 division = +100
 lp = +x */ 
     const COLUMN_MMR="mmr";
+    
+    /**  */ 
+    const COLUMN_PREFERED_QUEUE="prefered_queue";
+    
+    /**  */ 
+    const COLUMN_TOTAL_GAMES_REGISTED="total_games_registed";
        
     
     
@@ -100,6 +106,12 @@ tier = +500
 division = +100
 lp = +x @var int(11) */ 
     private $mmr;
+    
+    /**  @var varchar(45) */ 
+    private $prefered_queue;
+    
+    /**  @var int(11) */ 
+    private $total_games_registed;
         
 
     ### -----------------------
@@ -125,9 +137,11 @@ lp = +x @var int(11) */
 tier = +500
 division = +100
 lp = +x
+     * @param $prefered_queue varchar(45) 
+     * @param $total_games_registed int(11) 
      * 
      */
-    function __construct($idsuscriptores=null,$summoner_id=null,$region=null,$summoner_name=null,$registration_date=null,$last_update=null,$tier=null,$division=null,$lp=null,$mmr=null) {
+    function __construct($idsuscriptores=null,$summoner_id=null,$region=null,$summoner_name=null,$registration_date=null,$last_update=null,$tier=null,$division=null,$lp=null,$mmr=null,$prefered_queue=null,$total_games_registed=null) {
         $this->idsuscriptores = $idsuscriptores;
         $this->summoner_id = $summoner_id;
         $this->region = $region;
@@ -138,6 +152,8 @@ lp = +x
         $this->division = $division;
         $this->lp = $lp;
         $this->mmr = $mmr;
+        $this->prefered_queue = $prefered_queue;
+        $this->total_games_registed = $total_games_registed;
         
     }
 
@@ -234,6 +250,22 @@ lp = +x
     public function getMmr(){
         return $this->mmr;
     }
+    /**
+     * Devuelve la variable prefered_queue<br>
+     * Descripcion de la variable: 
+     * @return varchar(45)
+     */
+    public function getPrefered_queue(){
+        return $this->prefered_queue;
+    }
+    /**
+     * Devuelve la variable total_games_registed<br>
+     * Descripcion de la variable: 
+     * @return int(11)
+     */
+    public function getTotal_games_registed(){
+        return $this->total_games_registed;
+    }
 
     
     /**
@@ -319,6 +351,22 @@ lp = +x
     public function setMmr($value){
         $this->mmr=$value;
     }
+    /**
+     * Pone el valor a la variable prefered_queue<br>
+     * Descripcion de la variable: 
+     * @param varchar(45) $value
+     */
+    public function setPrefered_queue($value){
+        $this->prefered_queue=$value;
+    }
+    /**
+     * Pone el valor a la variable total_games_registed<br>
+     * Descripcion de la variable: 
+     * @param int(11) $value
+     */
+    public function setTotal_games_registed($value){
+        $this->total_games_registed=$value;
+    }
 
     function __toString() {
         return '<pre>' . print_r($this, true) . '</pre>';
@@ -403,6 +451,14 @@ lp = +x
                 $aWhereClause["mmr"] = $this->mmr;
             }
         
+            if (isset($this->prefered_queue)) {
+                $aWhereClause["prefered_queue"] = $this->prefered_queue;
+            }
+        
+            if (isset($this->total_games_registed)) {
+                $aWhereClause["total_games_registed"] = $this->total_games_registed;
+            }
+        
         $aResult = $this->db->select('*')->where($aWhereClause)->get(self::TABLE_NAME, 1)->row_array(0);
         return $this->constructFromArray($aResult);
     }
@@ -477,6 +533,14 @@ lp = +x
         
             if (isset($this->mmr)) {
                 $aWhereClause["mmr"] = $this->mmr;
+            }
+        
+            if (isset($this->prefered_queue)) {
+                $aWhereClause["prefered_queue"] = $this->prefered_queue;
+            }
+        
+            if (isset($this->total_games_registed)) {
+                $aWhereClause["total_games_registed"] = $this->total_games_registed;
             }
         
         $aRows = $this->db->select('*')->where($aWhereClause)->get(self::TABLE_NAME)->result_array();
@@ -576,6 +640,14 @@ lp = +x
                 $aData["mmr"] = $this->mmr;
             }
         
+            if (isset($this->prefered_queue)) {
+                $aData["prefered_queue"] = $this->prefered_queue;
+            }
+        
+            if (isset($this->total_games_registed)) {
+                $aData["total_games_registed"] = $this->total_games_registed;
+            }
+        
         }
 
         return $this->db->insert(self::TABLE_NAME, $aData);
@@ -631,6 +703,14 @@ lp = +x
         
             if (isset($this->mmr)) {
                 $aData["mmr"] = $this->mmr;
+            }
+        
+            if (isset($this->prefered_queue)) {
+                $aData["prefered_queue"] = $this->prefered_queue;
+            }
+        
+            if (isset($this->total_games_registed)) {
+                $aData["total_games_registed"] = $this->total_games_registed;
             }
         
         }
@@ -692,6 +772,14 @@ lp = +x
                 $aWithData["mmr"] = $this->mmr;
             }
             
+            if (isset($this->prefered_queue)) {
+                $aWithData["prefered_queue"] = $this->prefered_queue;
+            }
+            
+            if (isset($this->total_games_registed)) {
+                $aWithData["total_games_registed"] = $this->total_games_registed;
+            }
+            
         }
         if ($aWhereClause == null) {
             $aWhereClause["idsuscriptores"] = $this->idsuscriptores;
@@ -741,6 +829,14 @@ lp = +x
             
             if (isset($this->mmr)) {
                 $aWithData["mmr"] = $this->mmr;
+            }
+            
+            if (isset($this->prefered_queue)) {
+                $aWithData["prefered_queue"] = $this->prefered_queue;
+            }
+            
+            if (isset($this->total_games_registed)) {
+                $aWithData["total_games_registed"] = $this->total_games_registed;
             }
             
         }
@@ -796,6 +892,14 @@ lp = +x
         
             if (isset($this->mmr)) {
                 $aWhereClause["mmr"] = $this->mmr;
+            }
+        
+            if (isset($this->prefered_queue)) {
+                $aWhereClause["prefered_queue"] = $this->prefered_queue;
+            }
+        
+            if (isset($this->total_games_registed)) {
+                $aWhereClause["total_games_registed"] = $this->total_games_registed;
             }
         
         }

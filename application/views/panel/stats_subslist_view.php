@@ -15,31 +15,31 @@
                         <th>#</th>
                         <th>Nombre</th>
                         <th>Region</th>
-                        <th>Ranked</th>
+                        <th>Rango</th>
                         <th>Nº Juegos</th>
                         <th>Modo de juego preferido</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($aSubsYtJoin as $oSubsytjoin): ?>
-                        <?php // $oSubsytjoin = new SubsYtJoin(); ?>
+                    <?php foreach ($aSubsList as $oSub): ?>
+                        <?php // $oSub = new Suscriptores(); ?>
                         <tr>
                             <td><?= ++$c ?></td>
-                            <td><?= $oSubsytjoin->getSub_summoner_name() ?></td>
-                            <td><?= $oSubsytjoin->getSub_region() ?></td>
+                            <td><?= $oSub->getSummoner_name() ?></td>
+                            <td><?= $oSub->getRegion() ?></td>
                             <td>
-                                <?php if ($oSubsytjoin->getSub_tier()): ?>
-                                    <?php if ($oSubsytjoin->getSub_division()): ?>
-                                        <img data-toggle="tooltip" data-placement="right" title="<?= $oSubsytjoin->getSub_tier() . ' ' . $oSubsytjoin->getSub_division() ?>" style='height:30px' src='/assets/images/tier-icons/tier_icons/<?= strtolower($oSubsytjoin->getSub_tier()) ?>_<?= strtolower($oSubsytjoin->getSub_division()) ?>.png'>
+                                <?php if ($oSub->getTier()): ?>
+                                    <?php if ($oSub->getDivision()): ?>
+                                        <img data-toggle="tooltip" data-placement="right" title="<?= $oSub->getTier() . ' ' . $oSub->getDivision() ?>" style='height:30px' src='/assets/images/tier-icons/tier_icons/<?= strtolower($oSub->getTier()) ?>_<?= strtolower($oSub->getDivision()) ?>.png'>
                                     <?php else: ?>
-                                        <img data-toggle="tooltip" data-placement="right" title="<?= $oSubsytjoin->getSub_tier() ?>" style='height:30px' src='/assets/images/tier-icons/base_icons/<?= strtolower($oSubsytjoin->getSub_tier()) ?>.png'>
+                                        <img data-toggle="tooltip" data-placement="right" title="<?= $oSub->getTier() ?>" style='height:30px' src='/assets/images/tier-icons/base_icons/<?= strtolower($oSub->getTier()) ?>.png'>
                                     <?php endif; ?>
                                 <?php else: ?>
                                     <span style='height:30px;line-height: 30px;'>-</span>
                                 <?php endif; ?>
                             </td>
-                            <td><?= $oSubsytjoin->getTotal_games_registed() ?></td>
-                            <td style='text-transform: capitalize'><?= strtolower(str_replace('_', ' ', $oSubsytjoin->getPrefered_queue())) ?></td>
+                            <td><?= $oSub->getTotal_games_registed() ?></td>
+                            <td style='text-transform: capitalize'><?= strtolower(str_replace('_', ' ', $oSub->getPrefered_queue())) ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

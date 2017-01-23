@@ -110,7 +110,7 @@ class SubsAllGamesBase extends CI_Model {
     /**  @var varchar(25) */ 
     private $season;
     
-    /**  @var double */ 
+    /**  @var bigint(20) */ 
     private $created_date;
     
     /**  @var varchar(10) */ 
@@ -151,7 +151,7 @@ class SubsAllGamesBase extends CI_Model {
      * @param $champion int(11) 
      * @param $queue varchar(45) 
      * @param $season varchar(25) 
-     * @param $created_date double 
+     * @param $created_date bigint(20) 
      * @param $lane varchar(10) 
      * @param $role varchar(10) 
      * @param $kills int(11) 
@@ -265,7 +265,7 @@ class SubsAllGamesBase extends CI_Model {
     /**
      * Devuelve la variable created_date<br>
      * Descripcion de la variable: 
-     * @return double
+     * @return bigint(20)
      */
     public function getCreated_date(){
         return $this->created_date;
@@ -395,7 +395,7 @@ class SubsAllGamesBase extends CI_Model {
     /**
      * Pone el valor a la variable created_date<br>
      * Descripcion de la variable: 
-     * @param double $value
+     * @param bigint(20) $value
      */
     public function setCreated_date($value){
         $this->created_date=$value;

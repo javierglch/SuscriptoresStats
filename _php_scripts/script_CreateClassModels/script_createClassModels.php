@@ -3,7 +3,7 @@
 echo __FILE__;
 
 # CONFIG: 
-$database_name = "total";
+$database_name = "suscriptores_stats";
 $replaceModels=false; //poner a true para reemplazar todos los modelos
 
 ##### CREACION DE LAS RUTAS DONDE SE VAN A GUARDAR LOS ARCHIVOS ######

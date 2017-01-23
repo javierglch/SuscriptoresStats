@@ -55,6 +55,9 @@ $route['404_override'] = '_ErrorsController/index';
 $route['translate_uri_dashes'] = true;
 $route['test'] = '_Test/index';
 
+# Cron jobs
+$route['cron/update_summoners'] = 'CronjobsController/update_summoners';
+$route['cron/p'] = 'CronjobsController/p';
 
 # Start controller
 
@@ -80,7 +83,6 @@ $route['sub/search'] = 'SuscriptoresController/sub_search';
 $route['sub/add'] = 'SuscriptoresController/sub_add';
 $route['sub/ok'] = 'SuscriptoresController/sub_ok';
 $route['sub'] = 'SuscriptoresController/sub_ok';
-
 
 $route['(.*)'] = 'SuscriptoresController/index/$1';
 

@@ -14,7 +14,7 @@
                     <?php print_all_flash_messages() ?>
                     <div class="form-group">
                         <label for="EmailInput">Email</label>
-                        <input name='email' class="form-control" type="text" placeholder="Email con el que te registraste" id="EmailInput">
+                        <input name='email' class="form-control" type="text" placeholder="Email con el que te registraste" id="EmailInput" autofocus="autofocus">
                     </div>
                     <div class="form-group">
                         <label for="PassInput">Contraseña</label>

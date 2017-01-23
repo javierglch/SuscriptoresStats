@@ -64,14 +64,7 @@ class SuscriptoresController extends MY_Controller {
         } catch (Exception $ex) {
             $this->session->set_flashdata('alert-warning', 'Ya estabas asociado al youtuber, no hace falta que vuelvas a asociarte');
         }
-        if ($this->Suscriptores->getLast_update() == null || time() - $this->Suscriptores->getLast_update() > 60 * 60 * 24) {
-            try {
-                $this->Suscriptores->updateSubData();
-            } catch (\Exception $e) {
-                file_put_contents(APPPATH . 'logs/sub_add.log', '[' . date('d-m-Y H:i:s') . '] Sub_Summoner_Id: ' . $summ_id . ' (' . $region . ') | '
-                        . $e->getMessage() . ' - ' . LolApi::globalApi()->RequestManager->DebugManager->last_url . PHP_EOL, FILE_APPEND);
-            }
-        }
+
         $this->session->set_userdata(EnumSessionVars::SUB_ID, $this->Suscriptores->getIdsuscriptores());
         $this->session->set_userdata(EnumSessionVars::SUB_IP, $this->input->ip_address());
         redirect(base_url('sub/ok'));

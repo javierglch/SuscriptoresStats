@@ -85,7 +85,7 @@ class Suscriptores extends SuscriptoresBase {
         }
 
         $ci = & get_instance();
-        //asociamos el suscriptor
+        //asociamos el suscriptor. pega un throw si ya existia
         $ci->SuscriptoresYoutubers->insertUnique([
             SuscriptoresYoutubers::COLUMN_IDSUSCRIPTOR => $this->getIdsuscriptores(),
             SuscriptoresYoutubers::COLUMN_IDYOUTUBER => $youtuber_id,
@@ -112,33 +112,49 @@ class Suscriptores extends SuscriptoresBase {
 
     /**
      * Actualiza tier, division y puntos de liga
+     * @return Suscriptores
      * @throw \Exception
      */
     public function updateLeagueData() {
         \LolApi\LolApi::globalApi()->LolApiConfig->region = $this->getRegion();
-        $leagueDtoList = \LolApi\LolApi::globalApi()->getLeagueDtoListEnry([$this->getSummoner_id()])[$this->getSummoner_id()];
-        if (count($leagueDtoList) > 0 && count($leagueDtoList[0]->entries) > 0) {
-            $this->setTier($leagueDtoList[0]->tier);
-            $this->setDivision($leagueDtoList[0]->entries[0]->division);
-            $this->setLp($leagueDtoList[0]->entries[0]->leaguePoints);
-            $this->update([
-                self::COLUMN_TIER => $leagueDtoList[0]->tier,
-                self::COLUMN_DIVISION => $leagueDtoList[0]->entries[0]->division,
-                self::COLUMN_LP => $leagueDtoList[0]->entries[0]->leaguePoints,
-                self::COLUMN_MMR => $this->calcularMMR()
-            ]);
-        } else {
+        try {
+            $leagueDtoList = \LolApi\LolApi::globalApi()->getLeagueDtoListEnry([$this->getSummoner_id()])[$this->getSummoner_id()];
+            if (is_array($leagueDtoList)) {
+                $leagueDtoList = array_values($leagueDtoList)[0];
+            }
+            if (count($leagueDtoList->entries) > 0) {
+                $this->setTier($leagueDtoList->tier);
+                $this->setDivision($leagueDtoList->entries[0]->division);
+                $this->setLp($leagueDtoList->entries[0]->leaguePoints);
+                $this->setMmr($this->calcularMMR());
+                $this->update([
+                    self::COLUMN_TIER => $leagueDtoList->tier,
+                    self::COLUMN_DIVISION => $leagueDtoList->entries[0]->division,
+                    self::COLUMN_LP => $leagueDtoList->entries[0]->leaguePoints,
+                    self::COLUMN_MMR => $this->calcularMMR()
+                ]);
+            }
+        } catch (\LolApi\Exceptions\NotFoundException $ex) {
+            $this->setTier('PROVISIONAL');
+            $this->setDivision(null);
+            $this->setLp(null);
+            $this->setMmr(1200);
             $this->update([
                 self::COLUMN_TIER => 'PROVISIONAL',
                 self::COLUMN_DIVISION => null,
                 self::COLUMN_LP => null,
                 self::COLUMN_MMR => 1200
             ]);
+        } catch (\Exception $e) {
+            throw $ex;
         }
+
+        return $this;
     }
 
     /**
      * actualiza los ultimos juegos jugados (maximo recupera 10 juegos)
+     * @return int total inserts
      * @throw \Exception
      */
     public function updateLastestGamesData() {
@@ -146,6 +162,7 @@ class Suscriptores extends SuscriptoresBase {
         $recentsgames = \LolApi\LolApi::globalApi()->getRecentGamesDto($this->getSummoner_id());
         $aGamesIds = $this->getGamesIdsRegisted();
         $ci = & get_instance();
+        $inserts = 0;
         foreach ($recentsgames->games as $gamedto) {
             if (array_search($gamedto->gameId, $aGamesIds) === false) {
                 $ci->LastestGames->insert([
@@ -165,22 +182,24 @@ class Suscriptores extends SuscriptoresBase {
                     SuscriptoresLastestGames::COLUMN_IDSUSCRIPTOR => $this->getIdsuscriptores(),
                     SuscriptoresLastestGames::COLUMN_IDLASTEST_GAME => $this->db->insert_id()
                 ]);
+                $inserts++;
             }
         }
+        return $inserts;
     }
 
     /**
      * actualiza los ranked games jugados, recupera TODOS los ranked games, es una 
      * consulta bastante larga, habría que tener cuidado o medirlo de alguna manera
      * más eficaz para que no recupere todos
+     * @return int total inserts
      * @throw \Exception
      */
     public function updateRankedGamesData() {
         \LolApi\LolApi::globalApi()->LolApiConfig->region = $this->getRegion();
         $rankedgames = \LolApi\LolApi::globalApi()->getMatchList($this->getSummoner_id());
-
         $aGamesIds = $this->getGamesIdsRegisted();
-
+        $inserts = 0;
         $ci = & get_instance();
         foreach ($rankedgames->matches as $match) {
             if (array_search($match->matchId, $aGamesIds) === false) {
@@ -201,18 +220,23 @@ class Suscriptores extends SuscriptoresBase {
                     SuscriptoresRankedGames::COLUMN_IDSUSCRIPTOR => $this->getIdsuscriptores(),
                     SuscriptoresRankedGames::COLUMN_IDRANKED_GAME => $this->db->insert_id()
                 ]);
+                $inserts++;
             }
         }
+        return $inserts;
     }
 
     /**
      * actualiza los summary stats
+     * @return array ['updates','inserts'] numero de sumaries insertados y actualizados
      * @throw \Exception
      */
     public function updateSummaryStatsData() {
         \LolApi\LolApi::globalApi()->LolApiConfig->region = $this->getRegion();
         $summaryStats = \LolApi\LolApi::globalApi()->getPlayerStatsSummaryListDto($this->getSummoner_id());
         $ci = & get_instance();
+        $updates = 0;
+        $inserts = 0;
         foreach ($summaryStats->playerStatSummaries as $summaries) {
             $ci->SummaryStats->findOneBy([
                 SummaryStats::COLUMN_IDSUSCRIPTOR => $this->getIdsuscriptores(),
@@ -224,6 +248,7 @@ class Suscriptores extends SuscriptoresBase {
                     SummaryStats::COLUMN_WINS => $summaries->wins,
                     SummaryStats::COLUMN_MODIFYDATE => $summaries->modifyDate,
                 ]);
+                $updates++;
             } else {
                 $ci->SummaryStats->insert([
                     SummaryStats::COLUMN_LOSSES => $summaries->losses,
@@ -232,8 +257,10 @@ class Suscriptores extends SuscriptoresBase {
                     SummaryStats::COLUMN_IDSUSCRIPTOR => $this->getIdsuscriptores(),
                     SummaryStats::COLUMN_PLAYERSTATSUMMARYTYPE => $summaries->playerStatSummaryType,
                 ]);
+                $inserts++;
             }
         }
+        return ['updates' => $updates, 'inserts' => $inserts];
     }
 
     public function getYoutubers() {
@@ -257,13 +284,22 @@ class Suscriptores extends SuscriptoresBase {
      */
     private function getGamesIdsRegisted() {
         if (!$this->aGamesIdsRegisted) {
-            $rs = $this->db->select(SubsGamesIds::COLUMN_GAMEID)
-                    ->where(SubsGamesIds::COLUMN_IDSUSCRIPTOR, $this->getIdsuscriptores())
-                    ->get(SubsGamesIds::TABLE_NAME)
+            $rs = $this->db->query(
+                    'select game_id from
+                        (select lg.gameId as game_id
+                        from suscriptores_lastest_games slg
+                        inner join lastest_games lg on lg.idlastest_games=slg.idlastest_game 
+                        where slg.idsuscriptor='.$this->getIdsuscriptores().'
+                        union
+                        select rg.matchId as game_id
+                        from suscriptores_ranked_games srg
+                        inner join ranked_games rg on rg.idranked_games = srg.idranked_game
+                        where srg.idsuscriptor='.$this->getIdsuscriptores().') as tmp
+                    group by game_id')
                     ->result_array();
             $aGamesIds = [];
-            foreach ($rs as $key => $row) {
-                $aGamesIds[] = $row[SubsGamesIds::COLUMN_GAMEID];
+            foreach ($rs as $row) {
+                $aGamesIds[] = $row['game_id'];
             }
             $this->aGamesIdsRegisted = $aGamesIds;
         }
@@ -272,6 +308,15 @@ class Suscriptores extends SuscriptoresBase {
 
     public function calcularMMR() {
         return self::$MMR_CALC_CONFIG['tier'][$this->getTier()] * self::$TIER_BASE + self::$MMR_CALC_CONFIG['division'][$this->getDivision()] * self::$DIVISION_BASE + $this->getLp();
+    }
+
+    public function getSusbsToUpdate($bool_getAll = false) {
+        if ($bool_getAll) {
+            return $this->selectAll();
+        }
+        return $this->findBy([
+                    self::COLUMN_LAST_UPDATE . '<' => time() - $this->config->item('time_between_subs_update')
+        ]);
     }
 
 }

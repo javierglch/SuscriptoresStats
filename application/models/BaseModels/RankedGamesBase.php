@@ -86,7 +86,7 @@ class RankedGamesBase extends CI_Model {
     /**  @var varchar(25) */ 
     private $season;
     
-    /**  @var double */ 
+    /**  @var bigint(15) */ 
     private $timestamp;
     
     /**  @var varchar(10) */ 
@@ -123,7 +123,7 @@ class RankedGamesBase extends CI_Model {
      * @param $champion int(11) 
      * @param $queue varchar(45) 
      * @param $season varchar(25) 
-     * @param $timestamp double 
+     * @param $timestamp bigint(15) 
      * @param $lane varchar(10) 
      * @param $role varchar(10) 
      * @param $kills int(11) 
@@ -201,7 +201,7 @@ class RankedGamesBase extends CI_Model {
     /**
      * Devuelve la variable timestamp<br>
      * Descripcion de la variable: 
-     * @return double
+     * @return bigint(15)
      */
     public function getTimestamp(){
         return $this->timestamp;
@@ -299,7 +299,7 @@ class RankedGamesBase extends CI_Model {
     /**
      * Pone el valor a la variable timestamp<br>
      * Descripcion de la variable: 
-     * @param double $value
+     * @param bigint(15) $value
      */
     public function setTimestamp($value){
         $this->timestamp=$value;

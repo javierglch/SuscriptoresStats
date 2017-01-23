@@ -16,3 +16,4 @@ $ci = get_instance();
 $config['default_custom_yt_msg'] = 'Mete tu <strong>NOMBRE DE INVOCADOR</strong> y tu <strong>REGIÓN</strong>, lo buscaré en la base de datos de riot y si está todo correcto sólo tendrás que confirmarlo y ya está. Muchísimas gracias por tu ayuda y apoyo. Esto me ayudará muchísimo para los <strong>próximos videos que haga</strong>.';
 
 $config['twitter'] = 'LeagueOfHexania';
+$config['time_between_subs_update'] = 60 * 60 * 24; //in seconds (5h)

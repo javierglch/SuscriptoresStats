@@ -92,7 +92,7 @@ class LastestGamesBase extends CI_Model {
     /**  @var varchar(15) */ 
     private $season;
     
-    /**  @var double */ 
+    /**  @var bigint(15) */ 
     private $createDate;
     
     /**  @var int(11) */ 
@@ -125,7 +125,7 @@ class LastestGamesBase extends CI_Model {
      * @param $gameType varchar(25) EJ: MATCHED_GAME
      * @param $subType varchar(25) EJ: RANKED_SOLO_5x5
      * @param $season varchar(15) 
-     * @param $createDate double 
+     * @param $createDate bigint(15) 
      * @param $kills int(11) 
      * @param $deaths int(11) 
      * @param $assists int(11) 
@@ -217,7 +217,7 @@ class LastestGamesBase extends CI_Model {
     /**
      * Devuelve la variable createDate<br>
      * Descripcion de la variable: 
-     * @return double
+     * @return bigint(15)
      */
     public function getCreateDate(){
         return $this->createDate;
@@ -315,7 +315,7 @@ class LastestGamesBase extends CI_Model {
     /**
      * Pone el valor a la variable createDate<br>
      * Descripcion de la variable: 
-     * @param double $value
+     * @param bigint(15) $value
      */
     public function setCreateDate($value){
         $this->createDate=$value;

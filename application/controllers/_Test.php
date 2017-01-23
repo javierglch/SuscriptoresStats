@@ -11,7 +11,7 @@ class _Test extends MY_Controller {
     }
 
     public function index() {
-        echo date('d-m-Y',1485099171874/1000);
+        $strResult .= date('d-m-Y', 1485099171874 / 1000);
         die();
     }
 
@@ -22,39 +22,37 @@ class _Test extends MY_Controller {
         set_time_limit(0);
         $aSuscriptores = $this->Suscriptores->selectAll();
 
-        echo '<ol>';
+        $strResult = '';
         foreach ($aSuscriptores as $oSub) {
-            echo '<li>Actualiando ' . $oSub->getSummoner_name() . ' (' . $oSub->getRegion() . ')... ';
+            $strResult .= 'Actualiando ' . $oSub->getSummoner_name() . ' (' . $oSub->getRegion() . ')... ';
 
             try {
                 $oSub->updateLeagueData();
-                echo '<br/>updateLeagueData: <font color=green>OK</font>';
+                $strResult .= PHP_EOL . 'updateLeagueData | OK | '.$oSub->getTier().' '.$oSub->getDivision().' '.$oSub->getLp().' | MMR: '.$oSub->getMmr();
             } catch (Exception $ex) {
-                echo '<br/><font color=red>Error! ' . $ex->getMessage() . ' <a href="' . LolApi\LolApi::globalApi()->RequestManager->DebugManager->last_url . '">' . LolApi\LolApi::globalApi()->RequestManager->DebugManager->last_url . '</a></font>';
+                $strResult .= PHP_EOL . 'Error! ' . $ex->getMessage() . LolApi\LolApi::globalApi()->RequestManager->DebugManager->last_url;
             }
             try {
                 $oSub->updateSummaryStatsData();
-                echo '<br/>updateSummaryStatsData: <font color=green>OK</font>';
+                $strResult .= PHP_EOL . 'updateSummaryStatsData: OK';
             } catch (Exception $ex) {
-                echo '<br/><font color=red>Error! ' . $ex->getMessage() . ' <a href="' . LolApi\LolApi::globalApi()->RequestManager->DebugManager->last_url . '">' . LolApi\LolApi::globalApi()->RequestManager->DebugManager->last_url . '</a></font>';
+                $strResult .= PHP_EOL . 'Error! ' . $ex->getMessage() . LolApi\LolApi::globalApi()->RequestManager->DebugManager->last_url;
             }
             try {
                 $oSub->updateLastestGamesData();
-                echo '<br/>updateLastestGamesData: <font color=green>OK</font>';
+                $strResult .= PHP_EOL . 'updateLastestGamesData: OK';
             } catch (Exception $ex) {
-                echo '<br/><font color=red>Error! ' . $ex->getMessage() . ' <a href="' . LolApi\LolApi::globalApi()->RequestManager->DebugManager->last_url . '">' . LolApi\LolApi::globalApi()->RequestManager->DebugManager->last_url . '</a></font>';
+                $strResult .= PHP_EOL . 'Error! ' . $ex->getMessage() . LolApi\LolApi::globalApi()->RequestManager->DebugManager->last_url;
             }
             try {
                 $oSub->updateRankedGamesData();
-                echo '<br/>updateRankedGamesData: <font color=green>OK</font>';
+                $strResult .= PHP_EOL . 'updateRankedGamesData: OK';
             } catch (Exception $ex) {
-                echo '<br/><font color=red>Error! ' . $ex->getMessage() . ' <a href="' . LolApi\LolApi::globalApi()->RequestManager->DebugManager->last_url . '">' . LolApi\LolApi::globalApi()->RequestManager->DebugManager->last_url . '</a></font>';
+                $strResult .= PHP_EOL . 'Error! ' . $ex->getMessage() . LolApi\LolApi::globalApi()->RequestManager->DebugManager->last_url;
             }
             $oSub->update([Suscriptores::COLUMN_LAST_UPDATE => time()]);
 
-            echo '</li>';
         }
-        echo '</ol>';
 
         die();
     }
@@ -62,5 +60,5 @@ class _Test extends MY_Controller {
 }
 
 function debug($var) {
-    echo '<pre>' . print_r($var, true) . '</pre>';
+    $strResult .= '<pre>' . print_r($var, true) . '</pre>';
 }
