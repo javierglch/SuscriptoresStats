@@ -1,0 +1,19 @@
+{
+    "name": "vendor/hexaniav7",
+    "description": "hexaniav7.",
+    "authors": [
+        {
+            "name": "Xavicrak",
+            "email": "hexania.com@gmail.com"
+        }
+    ],
+    "require": {
+        "madcoda/php-youtube-api": "v1.2.1"
+    },
+    "autoload": {
+        "psr-0": {
+            "LolApi": "src/",
+            "MainProject": "src/"
+        }
+    }
+}
