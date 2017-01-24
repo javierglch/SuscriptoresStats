@@ -7,7 +7,7 @@
         </div>
         <div class='card-block'>
             <p>
-                Total de suscriptores actualmente: <strong class='text-primary'><?= count($aSubsYtJoin) ?></strong> | MMR MEDIO: <strong  class='text-primary'><?= number_format($avgMMR, 2, ',', '.') ?></strong>
+                Total de suscriptores actualmente: <strong class='text-primary'><?= $intTotalSubs ?></strong> | RANGO MEDIO: <strong  class='text-primary'><?= img_tag_league_by_mmr($avgMMR) ?></strong>
             </p>
             <table class='DataTable'>
                 <thead>
@@ -28,15 +28,7 @@
                             <td><?= $oSub->getSummoner_name() ?></td>
                             <td><?= $oSub->getRegion() ?></td>
                             <td>
-                                <?php if ($oSub->getTier()): ?>
-                                    <?php if ($oSub->getDivision()): ?>
-                                        <img data-toggle="tooltip" data-placement="right" title="<?= $oSub->getTier() . ' ' . $oSub->getDivision() ?>" style='height:30px' src='/assets/images/tier-icons/tier_icons/<?= strtolower($oSub->getTier()) ?>_<?= strtolower($oSub->getDivision()) ?>.png'>
-                                    <?php else: ?>
-                                        <img data-toggle="tooltip" data-placement="right" title="<?= $oSub->getTier() ?>" style='height:30px' src='/assets/images/tier-icons/base_icons/<?= strtolower($oSub->getTier()) ?>.png'>
-                                    <?php endif; ?>
-                                <?php else: ?>
-                                    <span style='height:30px;line-height: 30px;'>-</span>
-                                <?php endif; ?>
+                                <?= img_tag_league_by_league($oSub->getTier(), $oSub->getDivision(), $oSub->getLp()) ?>
                             </td>
                             <td><?= $oSub->getTotal_games_registed() ?></td>
                             <td style='text-transform: capitalize'><?= strtolower(str_replace('_', ' ', $oSub->getPrefered_queue())) ?></td>

@@ -22,9 +22,9 @@
                     </div>
                     <div class="form-group">
                         &nbsp;División:&nbsp;<select class="form-control" name="division">
-                            <option value="86400">1 Día</option>
-                            <option value="604800">1 Semana</option>
-                            <option value="2419200">1 Mes</option>
+                            <option value="1">1 Día</option>
+                            <option value="2">1 Semana</option>
+                            <option value="3">1 Mes</option>
                         </select>
                         <?php if (isset($_GET['division'])): ?>
                             <script type='text/javascript'>

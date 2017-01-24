@@ -156,6 +156,10 @@ class Youtubers extends YoutubersBase {
 
     private $embedHtml;
 
+    /**
+     * 
+     * @return htmlTag iframe 
+     */
     public function getEmbedHtmlCodeForVideo() {
         if (!$this->embedHtml) {
             $youtube_api = new Madcoda\Youtube\Youtube(array('key' => 'AIzaSyByJgiRHj2NypQtaj9js5yC6atyKQadnjU'));
@@ -167,10 +171,9 @@ class Youtubers extends YoutubersBase {
 
     /**
      * 
-     * @return SubsYtJoin
+     * @return array
      */
     public function getSubsList() {
-        $ci = & get_instance();
         $aRSSuscriptores = $this->db->query('select s.* from suscriptores s inner join suscriptores_youtubers sy on sy.idsuscriptor=s.idsuscriptores where sy.idyoutuber=' . $this->getIdyoutubers() . ';')->result_array();
         $aResult = [];
         foreach ($aRSSuscriptores as $row) {
@@ -179,13 +182,20 @@ class Youtubers extends YoutubersBase {
         }
         return $aResult;
     }
+    
+    /**
+     * 
+     * @return int
+     */
+    public function getTotalSubs() {
+        return $this->db->query('select count(*) as c from suscriptores_youtubers  where idyoutuber=' . $this->getIdyoutubers() . ';')->row_array(0)['c'];
+    }
 
     /**
      * 
-     * @return SubsYtJoin
+     * @return float
      */
     public function getSubsAvgMMR() {
-        $ci = & get_instance();
         return $this->db->query('select avg(mmr) as avg_mmr from suscriptores s inner join suscriptores_youtubers sy on sy.idsuscriptor=s.idsuscriptores where sy.idyoutuber=' . $this->getIdyoutubers() . ';')->row_array()['avg_mmr'];
     }
 

@@ -20,8 +20,9 @@ require_once APPPATH . 'models/BaseModels/SuscriptoresBase.php';
  */
 class Suscriptores extends SuscriptoresBase {
 
-    static $TIER_BASE = 600;
-    static $DIVISION_BASE = 100;
+    const TIER_BASE = 600;
+    const DIVISION_BASE = 100;
+
     static $MMR_CALC_CONFIG = [
         'tier' => [
             'BRONZE' => 1,
@@ -33,13 +34,15 @@ class Suscriptores extends SuscriptoresBase {
             'CHALLENGER' => 7,
         ],
         'division' => [
-            'V' => 1,
-            'IV' => 2,
-            'III' => 3,
-            'II' => 4,
-            'I' => 5,
+            'V' => 0,
+            'IV' => 1,
+            'III' => 2,
+            'II' => 3,
+            'I' => 4,
         ]
     ];
+    static $A_TIERS = ['PROVISIONAL', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'MASTER', 'CHALLENGER'];
+    static $A_DIVISION = ['V', 'IV', 'III', 'II', 'I'];
 
     /**
      * Constructor
@@ -126,12 +129,12 @@ class Suscriptores extends SuscriptoresBase {
                 $this->setTier($leagueDtoList->tier);
                 $this->setDivision($leagueDtoList->entries[0]->division);
                 $this->setLp($leagueDtoList->entries[0]->leaguePoints);
-                $this->setMmr($this->calcularMMR());
+                $this->setMmr(self::calcMMRByLeague($this->getTier(),$this->getDivision(),$this->getLp()));
                 $this->update([
                     self::COLUMN_TIER => $leagueDtoList->tier,
                     self::COLUMN_DIVISION => $leagueDtoList->entries[0]->division,
                     self::COLUMN_LP => $leagueDtoList->entries[0]->leaguePoints,
-                    self::COLUMN_MMR => $this->calcularMMR()
+                    self::COLUMN_MMR => $this->getMmr()
                 ]);
             }
         } catch (\LolApi\Exceptions\NotFoundException $ex) {
@@ -306,8 +309,38 @@ class Suscriptores extends SuscriptoresBase {
         return $this->aGamesIdsRegisted;
     }
 
-    public function calcularMMR() {
-        return self::$MMR_CALC_CONFIG['tier'][$this->getTier()] * self::$TIER_BASE + self::$MMR_CALC_CONFIG['division'][$this->getDivision()] * self::$DIVISION_BASE + $this->getLp();
+    public static function calcMMRByLeague($tier, $division, $lp) {
+        $mmr = 0;
+        if (self::$MMR_CALC_CONFIG['tier'][$tier] >= 6) {
+            if ($lp > 200) {
+                $tier = 'MASTER';
+            }
+            $mmr += self::$MMR_CALC_CONFIG['tier'][$tier] * self::TIER_BASE + $lp;
+        } else {
+            $mmr += self::$MMR_CALC_CONFIG['tier'][$tier] * self::TIER_BASE + self::$MMR_CALC_CONFIG['division'][$division] * self::DIVISION_BASE + $lp;
+        }
+        return $mmr;
+    }
+
+    public static function calcLeagueByMMR($mmr) {
+
+        $tierIndex = floor($mmr / self::TIER_BASE);
+        if ($tierIndex >= count(self::$A_TIERS)) {
+            $tierIndex = count(self::$A_TIERS) - 1;
+        }
+        if ($tierIndex >= 6) {
+            $tierIndex = 6;
+            $divisionIndex = 4;
+            $lp = floor($mmr - ($tierIndex * self::TIER_BASE));
+        } else {
+            $divisionIndex = floor(($mmr - ($tierIndex * self::TIER_BASE)) / self::DIVISION_BASE);
+            if ($divisionIndex >= count(self::$A_DIVISION)) {
+                $divisionIndex = count(self::$A_DIVISION) - 1;
+            }
+            $lp = floor($mmr - ($tierIndex * self::TIER_BASE) - ($divisionIndex * self::DIVISION_BASE));
+        }
+
+        return [self::$A_TIERS[$tierIndex], self::$A_DIVISION[$divisionIndex], $lp];
     }
 
     public function getSusbsToUpdate($bool_getAll = false) {

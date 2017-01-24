@@ -46,11 +46,27 @@ class SubsYtGamesStats extends SubsYtGamesStatsBase {
      * recupera las estadisticas de campeones
      * @param int $from_timestamp
      * @param int $to_timestamp
-     * @param int $division
+     * @param int $division_type 1 agrupar por dias, 2 agrupar por semanas, 3 agrupar por meses
      * @param int $yt_id
      * @return mixed
      */
-    public function getChampionStatsBy($from_timestamp, $to_timestamp, $division, $yt_id, &$totalGames=0) {
+    public function getChampionStatsBy($from_timestamp, $to_timestamp, int $division_type, $yt_id, &$totalGames = 0) {
+
+        // damos valores segun el tipo de division
+        switch ($division_type) {
+            case 2://semanas
+                $fecha_format = '%v-%Y';
+                $division = 604800 * 1000;
+                break;
+            case 3: //meses
+                $fecha_format = '%m-%Y';
+                $division = 2592000 * 1000;
+                break;
+            default: //1 dia
+                $fecha_format = '%d-%m-%Y';
+                $division = 86400 * 1000;
+        }
+
         //CREAMOS Y EJECUTAMOS SQL
         $numberUnions = ($to_timestamp - $from_timestamp) / $division;
         $sql = [];
@@ -76,7 +92,7 @@ class SubsYtGamesStats extends SubsYtGamesStatsBase {
                     WHERE sy.idyoutuber=' . $yt_id . ' AND `timestamp` between ' . $from . ' and ' . $to . ')';
         }
         $query = implode(' union ', $sql);
-        $query = 'SELECT champion, count(*) as games_played, DATE_FORMAT(FROM_UNIXTIME(`create_date`/1000), \'%d-%m-%Y\') as fechas, create_date as `from_timestamp` FROM '
+        $query = 'SELECT champion, count(*) as games_played, DATE_FORMAT(FROM_UNIXTIME(`create_date`/1000), \'' . $fecha_format . '\') as fechas, create_date as `from_timestamp` FROM '
                 . '(SELECT champion, game_id, min(create_date) as create_date FROM (' . $query . ') as tpm GROUP BY game_id, champion) as tmp2'
                 . ' GROUP BY fechas, champion order by champion, fechas, count(*) desc;';
         $aRS = $this->db->query($query)->result_array();
