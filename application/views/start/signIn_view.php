@@ -1,3 +1,7 @@
+<div class="login-link">
+    <a class="btn btn-info" href="<?= base_url('login') ?>"><i class="fa fa-lock"></i> <span class="hidden-xs-down">Acceso Youtubers</span></a>
+</div>
+
 <div class="container">
     <section class="margin-top-40 text-center">
         <a href="<?= base_url() ?>"><img class="img-fluid img-responsive" src="/assets/images/logo.png" alt="logo subs stats"></a>
